@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Green City | cycle details{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row p-1 text-center">
+            <div class="card  mb-3 mt-3 mx-auto" style="width: 55rem;">
+                <div class="card-header">
+                    <h2> Cycle: {{cycle.name}} </h2>
+                </div>
+                <div class="card-body text-left">
+                    <div class="row pb-2" style="border-bottom: 1px solid gray;">
+                        <div class="col-sm-4 text-center">
+                            <h6>
+                                <img src="{{cycle.image.url}}" alt="cycle picture" class="img-fluid">
+                            </h6>
+                        </div>
+                        <div class="col-sm-4 pt-3">
+                            <h6>
+                                Model: {{cycle.model}}
+                                <hr>
+                                Owner: {{cycle.owner}}
+                                <hr>
+                                Rent: {{cycle.rent}} BDT
+                                <hr>
+                                {% if location == None %}
+                                    Location Not Available
+                                {% else %}
+                                    Location 1: {{location.area}}
+                                    {% if location.near_by %}
+                                        ,<br>Location 2: {{location.near_by}}
+                                    {% endif %}
+                                    {% if location.near_by_t %}
+                                        ,<br>Location 3: {{location.near_by_t}}
+                                    {% endif %}
+                                    {% if location.gps_lat and location.gps_lon %}
+                                        <br> 
+                                        <button class="btn btn-primary">View on map</button>
+                                    {% endif %}
+                                {% endif %}
+                                {% if form %}
+                                    <hr>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                        Set UP Location
+                                    </button>
+                                {% endif %}
+                            </h6>
+                        </div>
+                        <div class="col-sm-4 pt-3">
+                            <h6>
+                                Ratings: {{cycle.rating}}
+                            </h6>
+                            <hr>
+                            <h6 class="text-center">
+                                {% if cycle.is_picked == False and cycle.owner != request.user %}
+                                    <form class="text-left" method="POST" action="/cycles/pickcycle/{{cycle.id}}" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        {% include 'formtemplate.html' with form=form_p %}
+                                        <button class="btn btn-primary" type='submit'>PICK</button>
+                                    </form>
+                                {% endif %}
+                            </h6>
+                        </div>
+                    </div>
+                    <div id="disqus_thread"></div>
+                </div>  
+            </div>    
+        </div>    
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Add Location</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="text-left" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {% include 'formtemplate.html' with form=form %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type='submit'>Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- comment system -->
+    <script>
+    /**
+    *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+    {/* var disqus_config = function () {
+    this.page.url = "http://127.0.0.1:8000/";  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    }; */}
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    s.src = 'https://http-127-0-0-1-8000-krzcbzesgz.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+    </script>
+    <script id="dsq-count-scr" src="//http-127-0-0-1-8000-krzcbzesgz.disqus.com/count.js" async></script>  
+{% endblock %}

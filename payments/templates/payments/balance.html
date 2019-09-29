@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% block title %}Green City | balance{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row p-1 text-center">
+            <div class="card bg-light mb-3 mt-3 mx-auto" style="width: 55rem;">
+                <div class="card-header">
+                    <h2>Balance</h2>
+                </div>
+                <div class="card-body text-left">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h5>Your Balance: {{balance.balance}} BDT</h5>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>You Earned: {{balance.earned}} BDT</h5>
+                            <h5>Your Due: {{balance.due}} BDT</h5>
+                        </div>
+                        <div class="col-sm-4">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#cashmodal">Cash In | Out</button>
+                        </div>
+                    </div>
+                </div>  
+            </div>    
+        </div>
+        <!-- Cash Modal -->
+        <div class="modal fade" id="cashmodal" tabindex="-1" role="dialog" aria-labelledby="cashmodalTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Cash In or Out</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form class="text-left" method="POST" action="{% url 'cash' %}" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            {% include 'formtemplate.html' with form=form_c %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button class="btn btn-primary" type='submit'>Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>    
+    </div>
+    {% if cycles_r %}
+        <div class="container">
+            <div class="row p-1 text-center">
+                <div class="card bg-light mb-3 mt-3 mx-auto" style="width: 55rem;">
+                    <div class="card-header">
+                        <h2>My Rent Out Cycles</h2>
+                    </div>
+                    <div class="card-body text-left">
+                        {% for cycle in cycles_r %}
+                            <a href="/cycles/{{cycle.cycle.id}}">{{cycle.cycle.name}}, Model {{cycle.cycle.model}}</a>
+                            <h6>Picked by {{cycle.pick.picked_by}} on {{cycle.pick.pick_date}}</h6> 
+                            <hr>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if cycles_h %}
+        <div class="container">
+            <div class="row p-1 text-center">
+                <div class="card bg-light mb-3 mt-3 mx-auto" style="width: 55rem;">
+                    <div class="card-header">
+                        <h2>My Hired Cycles</h2>
+                    </div>
+                    <div class="card-body text-left">
+                        {% for cycle in cycles_h %}
+                            <a href="/cycles/{{cycle.cycle.id}}">{{cycle.cycle.name}}, Model: {{cycle.cycle.model}}</a> 
+                            <h6>Owner: {{cycle.cycle.owner}}, Picked on {{cycle.pick.pick_date}}</h6>
+                            {% if drop_btn %}
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#transitionmodal{{ forloop.counter }}">DROP</button>
+                            {% else %}
+                                <button class="btn btn-primary" disabled="disabled" type="button">DROP</button>
+                            {% endif %}
+                            <!-- transition Modal -->
+                            <div class="modal fade" id="transitionmodal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="transitionmodal{{ forloop.counter }}Title"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">Transition</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form class="text-left" method="POST" action="/payments/transition/{{cycle.cycle.id}}" enctype="multipart/form-data">
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                {% include 'formtemplate.html' with form=form_t %}
+                                                {% include 'formtemplate.html' with form=form_r %}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button class="btn btn-primary" type='submit'>Pay</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="container">
+        <p class="text-center">
+            <button class="btn btn-primary" type="button" data-toggle="collapse" href="#multiCollapseExample1" 
+                aria-expanded="false" aria-controls="multiCollapseExample1">Transition History</button>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#multiCollapseExample2"
+                aria-expanded="false" aria-controls="multiCollapseExample2">Cash Transition History</button>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target=".multi-collapse"
+                aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">All History</button>
+        </p>
+        <div class="collapse multi-collapse" id="multiCollapseExample1">
+            {% if transition_history %}
+                <div class="container">
+                    <div class="row p-1 text-center">
+                        <div class="card bg-light mb-3 mt-3 mx-auto" style="width: 55rem;">
+                            <div class="card-header">
+                                <h2>My Previous Transition</h2>
+                            </div>
+                            <div class="card-body text-left">
+                                <table class="table table-light">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Transition Id</th>
+                                            <th scope="col">Sender</th>
+                                            <th scope="col">Receiver </th>
+                                            <th scope="col">Amount</th>
+                                            <th scope="col">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for transition in transition_history %}
+                                        <tr>
+                                            <th scope="row">{{ transition.id }}</th>
+                                            <td>{{ transition.sender }}</td>
+                                            <td>{{ transition.receiver }}</td>
+                                            <td>{{ transition.amount }}</td>
+                                            <td>{{ transition.date }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="collapse multi-collapse" id="multiCollapseExample2">
+            {% if cash_history %}
+                <div class="container">
+                    <div class="row p-1 text-center">
+                        <div class="card bg-light mb-3 mt-3 mx-auto" style="width: 55rem;">
+                            <div class="card-header">
+                                <h2>My Previous Cash Transition</h2>
+                            </div>
+                            <div class="card-body text-left">
+                                <table class="table table-light">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Cash Id</th>
+                                            <th scope="col">Cash In </th>
+                                            <th scope="col">Cash Out</th>
+                                            <th scope="col">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cash in cash_history %}
+                                        <tr>
+                                            <th scope="row">{{ cash.id }}</th>
+                                            <td>{{ cash.cash_in }}</td>
+                                            <td>{{ cash.cash_out }}</td>
+                                            <td>{{ cash.date }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>    
+{% endblock %}

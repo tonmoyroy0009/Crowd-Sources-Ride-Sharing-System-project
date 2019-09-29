@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Logout{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row p-1 text-center">
+            <div class="card bg-light mb-3 mt-3 mx-auto" style="width: 55rem;">
+                <div class="card-body">
+                    <h2>You have been logged out</h2>
+                    <div class="border-top pt-3">
+                        <small class="text-muted">
+                            <a href="{% url 'login' %}">Log In </a>Again
+                        </small> <br>
+                        <small class="text-muted">
+                            or Go <a href="{% url 'home' %}"> Home</a>
+                        </small>
+                    </div>
+                </div>  
+            </div>    
+        </div>    
+    </div>
+{% endblock content %}

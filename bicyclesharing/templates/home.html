@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Green City{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+    <div class="container">
+        <div class="row p-1 text-center">
+            <div class="card bg-light mb-3 mt-3 mx-auto" style="width: 55rem;">
+                <div class="card-body">
+                    <h2>Cycles</h2>
+                    <div class="pt-3">
+                    <form class="form-inline" method="post">
+                        <div class="col-10 p-0">
+                            {% csrf_token %}
+                            <input class="form-control m-0" style="width:100%" type="text" placeholder="Search . . ." aria-label="search" name="search">
+                        </div>
+                        <div class="col-2 p-0">
+                            <button class="btn btn-info m-0" type="submit" style="width:100%;"><i class="fa fa-search text-light"></i></button>
+                        </div>
+                    </form>
+                        {% for cycle in cycles %}
+                            <hr>
+                            <a href="cycles/{{cycle.id}}" class="nav-link text-left text-dark">
+                            <div class="row">
+                                <div class="col-sm-4 pt-3"><h6>
+                                    Cycle: {{cycle.name}} <hr>
+                                    Model: {{cycle.model}}
+                                </h6></div>
+                                <div class="col-sm-4 pt-3"><h6>
+                                    Rent: {{cycle.rent}} BDT <hr>
+                                    Owner: {{cycle.owner}}
+                                </h6></div>
+                                <div class="col-sm-4 text-center">
+                                    <img src="{{cycle.image.url}}" alt="cycle picture" style="width:50%; height:auto;">
+                                </div>
+                            </div>
+                            </a>
+                        {% endfor %}
+                        <hr>                        
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-end">
+                                {% if cycles.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{ cycles.previous_page_number }}">&laquo;</a></li>
+                                {% endif %}
+                                {% for page in cycles.paginator.page_range %}
+                                    <li {% if page == cycles.number %} class="page-item disabled" {% else %} class="page-item" {% endif %}><a class="page-link" href="?page={{page}}">{{page}}</a></li>
+                                {% endfor %}
+                                {% if cycles.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ cycles.next_page_number }}">&raquo;</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{ cycles.paginator.num_pages }}">Last</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+
+                    </div> 
+                </div>  
+            </div>    
+        </div>    
+    </div>
+    {% else %}
+    <div class="container">
+        <div class="row p-1 text-center">
+            <div class="card bg-light mb-3 mt-3 mx-auto" style="width: 55rem;">
+                <div class="card-body">
+                    <h2>Home</h2>
+                    <div class="border-top pt-3">
+                        <small class="text-muted">
+                            <a href="{% url 'login' %}">sign in </a> | or
+                            <a href="{% url 'register' %}">sign Up </a>
+                        </small>
+                    </div>
+                </div>  
+            </div>    
+        </div>    
+    </div>
+    {% endif %}                
+{% endblock %}
