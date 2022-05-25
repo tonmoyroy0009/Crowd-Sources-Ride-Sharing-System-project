@@ -6,6 +6,6 @@ django-widget-tweaks==1.4.3
 djangorestframework==3.11.2
 phonenumbers==8.10.8
 Pillow==6.2.0
-PyJWT==1.7.1
+PyJWT==2.4.0
 python-decouple==3.1
 social-auth-app-django==3.1.0
